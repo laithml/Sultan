@@ -194,3 +194,29 @@ exports.picked = (req, res) => {
     });
 
 }
+
+
+exports.getCustomers = (req, res) => {
+    console.log('get customers called');
+    const customersRef = collection(db, 'customers');
+    getDocs(customersRef).then((snapshot) => {
+        const customers = [];
+        snapshot.forEach((doc) => {
+            const data = doc.data();
+            customers.push(data);
+        });
+        res.send(customers);
+    }).catch((error) => {
+        console.error(error);
+        res.status(500).send('Error getting customers');
+    });
+}
+
+exports.deleteCustomer = (req, res) => {
+    console.log('delete customer called');
+    const phone = req.params.phone;
+    const customerRef = doc(db, 'customers', phone);
+    deleteDoc(customerRef).then(() => {
+        res.status(204).send();
+    });
+}

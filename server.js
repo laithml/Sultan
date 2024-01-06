@@ -15,10 +15,12 @@ app.set("view engine", "ejs");
 app.set("views", "./views");
 app.use('/', require("./route/router"));
 
+
 const twilio = require("twilio");
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const client = twilio(accountSid, authToken);
+
 
 // Send SMS route
 app.post('/send-sms', upload.none(), (req, res) => {

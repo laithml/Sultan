@@ -18,8 +18,9 @@ router.get("/search", requireAuth, HomeController.search);
 
 router.get("/tickets", requireAuth, HomeController.tickets);
 
-router.get("/not-found", HomeController.notFound);
+router.get("/customers", requireAuth, HomeController.customers);
 
+router.get("/not-found", HomeController.notFound);
 
 //*****************************************************************************************//
 //************************************TICKETS ROUTES***************************************//
@@ -31,9 +32,9 @@ router.post('/picked', requireAuth, upload.none(), TicketsController.picked);
 router.delete('/delete-ticket/:phone/:id', requireAuth, upload.none(), TicketsController.deleteTicket);
 router.post('/get-ticket-lives',requireAuth, upload.none(), TicketsController.getLiveTicket);
 router.put('/update-ticket', requireAuth, upload.none(), TicketsController.updateTicket);
-
+router.get('/getCustomers', requireAuth, upload.none(), TicketsController.getCustomers);
 router.get("/getDevices/:brand", requireAuth, upload.none(), gsm.getDevices);
-
+router.delete('/delete-customer/:phone', requireAuth, upload.none(), TicketsController.deleteCustomer);
 router.get("*", (req, res) => {
     res.redirect("/not-found");
 });

@@ -17,5 +17,7 @@ exports.tickets = (req,res) => {
 exports.notFound = (req,res) => {
     res.render("not-found");
 }
-
+exports.customers = (req,res) => {
+    res.render("customers");
+}
 
