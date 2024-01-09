@@ -93,7 +93,8 @@ app.post('/logout', upload.none(), (req, res) => {
 //add customer to database
 app.post('/add-customer', upload.none(), (req, res) => {
     console.log("add customer called");
-    const {name, phone, issue, passcode, status, price, received_date, done_date,brand,model,img} = req.body;
+    console.log(req.body);
+    const {name, phone, issue, passcode, status, price, received_date, done_date,brand,model,img,categoryId} = req.body;
     //generate random ticket id for each customer
     const ticketId = Math.random().toString(36).substring(2, 8).toUpperCase();
     const customer = {
@@ -109,7 +110,8 @@ app.post('/add-customer', upload.none(), (req, res) => {
         done_date: done_date,
         brand:brand,
         model:model,
-        img:img
+        img:img,
+        categoryId:categoryId
     }
 
     const custRef = doc(db, 'customers', phone);

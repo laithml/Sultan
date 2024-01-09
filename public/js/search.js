@@ -8,16 +8,25 @@ let table = $('#Table').DataTable({
         {data: "price"},
         {data: "received_date"},
         {data: "done_date"},
-        {data: "Pick UP"}
+        {data: "Pick UP"},
+        {data: "categoryId", visible: false} // Hidden column for category ID
+
     ]
 });
-$('#search').click(function (e) {
-    let phone = $("#searchInput").val();
-    e.preventDefault();
-    table.clear();
-    if (phone[0] === '0') {
-        phone = phone.substring(1);
-    }
+
+let categories; // Global variable to store categories
+
+function fetchCategories() {
+    fetch('/getCategories')
+        .then(response => response.json())
+        .then(categoriesData => {
+            categories = categoriesData; // Assign categories globally
+        })
+        .catch(error => console.error('Error fetching categories:', error));
+}
+
+function fetchCustomerAndTickets(phone, table) {
+
     let formData = new FormData();
     formData.append('phone', phone);
     console.log(phone);
@@ -40,12 +49,16 @@ $('#search').click(function (e) {
                 </div>
             `);
             const tickets = customer.tickets;
+            console.log(tickets);
             tickets.forEach(ticket => {
                 if (ticket.img === undefined) {
                     ticket.img = "https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png";
                 }
                 if(ticket.model === undefined){
                     ticket.model = "No Model";
+                }
+                if (!ticket.categoryId) {
+                    ticket.categoryId = "A";
                 }
 
                 let customer1 = $('<tr>')
@@ -56,7 +69,13 @@ $('#search').click(function (e) {
                     .append($('<td>').text(ticket.price))
                     .append($('<td>').text(ticket.received_date))
                     .append($('<td>').text(ticket.done_date))
-                    .append($('<td>').html(`<button class="btn btn-success btn-circle btn-pick" data-id="${ticket.id}" data-phone="${customer.phone}">  <i class="fas fa-check"></i> </button>`));
+                    .append($('<td>').html(`<button class="btn btn-success btn-circle btn-pick" data-id="${ticket.id}" data-phone="${customer.phone}">  <i class="fas fa-check"></i> </button>`))
+                    .append($('<td>').text(ticket.categoryId));
+                // Set background color based on category ID
+                const category = categories.find(cat => cat.id === ticket.categoryId);
+                const categoryColor = category ? category.color : ''; // Default color if category not found
+                customer1.css('background-color', categoryColor);
+
                 table.row.add(customer1);
             });
             table.draw();
@@ -121,6 +140,18 @@ $('#search').click(function (e) {
     });
 
 
+}
 
 
+fetchCategories();
+
+
+$('#search').click(function (e) {
+    let phone = $("#searchInput").val();
+    e.preventDefault();
+    table.clear();
+    if (phone[0] === '0') {
+        phone = phone.substring(1);
+    }
+    fetchCustomerAndTickets(phone, table);
 });

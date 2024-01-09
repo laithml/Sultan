@@ -142,13 +142,16 @@
 
         <!-- Page Heading -->
         <h1 class="h3 mb-2 text-gray-800">Tickets</h1>
-
+        <div id="filterBar"></div>
+          <p class="mb-4"></p>
         <!-- DataTales Example -->
         <div class="card shadow mb-4">
           <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">Tickets Table</h6>
           </div>
+
           <div class="card-body">
+
             <div class="table-responsive">
               <table id="Tickets" class="table table-bordered" width="100%" cellspacing="0">
                 <thead>
@@ -161,7 +164,8 @@
                   <th>Price</th>
                   <th>Passcode</th>
                   <th>Received Date</th>
-                  <th>Done</th>
+                  <th style="display:none;">Category ID</th> <!-- Hidden category ID column -->
+                  <th>Actions</th>
                 </tr>
                 </thead>
                 <tbody>

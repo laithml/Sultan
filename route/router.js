@@ -6,6 +6,7 @@ const TicketsController = require("../controllers/TicketsController");
 const requireAuth = require("../Middleware/mid");
 const multer = require("multer");
 const gsm = require("../controllers/gsm");
+const profile = require("../controllers/ProfileController");
 const upload = multer();
 
 router.get("/", requireAuth, HomeController.Main);
@@ -35,6 +36,13 @@ router.put('/update-ticket', requireAuth, upload.none(), TicketsController.updat
 router.get('/getCustomers', requireAuth, upload.none(), TicketsController.getCustomers);
 router.get("/getDevices/:brand", requireAuth, upload.none(), gsm.getDevices);
 router.delete('/delete-customer/:phone', requireAuth, upload.none(), TicketsController.deleteCustomer);
+
+//*****************************************************************************************//
+//************************************PROFILE ROUTES***************************************//
+//*****************************************************************************************//
+router.get("/getCategories", requireAuth, profile.getCategories);
+
+
 router.get("*", (req, res) => {
     res.redirect("/not-found");
 });

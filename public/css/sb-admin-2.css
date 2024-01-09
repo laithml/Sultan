@@ -30,6 +30,25 @@ input[type="number"]::-webkit-outer-spin-button {
   border-color: #4e73df; /* Change to preferred color to indicate selection */
 }
 
+.custom-dropdown {
+  position: relative;
+  display: inline-block;
+}
+#filterBar {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.category-bubble {
+  padding: 10px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+
 
 :root {
   --blue: #4e73df;

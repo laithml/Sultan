@@ -25,21 +25,23 @@ jQuery.extend(jQuery.fn.dataTableExt.oSort, {
     }
 });
 
+let categories = []; // Define categories globally
+
 $(document).ready(() => {
-    // Initialize DataTables with empty data
     let table = $('#Tickets').DataTable({
         data: [],
         pageLength: 100,
         columns: [
-            {data:"img"},
-            {data:"model"},
-            {data: "name"},
-            {data: "phone"},
-            {data: "issue"},
-            {data: "passcode"},
-            {data: "price"},
-            {data: "received_date", type: "date-custom"},
-            {data: "Done"}
+            { data: "img" },
+            { data: "model" },
+            { data: "name" },
+            { data: "phone" },
+            { data: "issue" },
+            { data: "passcode" },
+            { data: "price" },
+            { data: "received_date", type: "date-custom" },
+            { data: "category", visible: false }, // Hidden column for category ID
+            { data: "Done" }
         ],
         order: [[7, "desc"]]
     });
@@ -61,9 +63,15 @@ $(document).ready(() => {
                         .append($('<td>').text(row.price))
                         .append($('<td>').text(row.passcode))
                         .append($('<td>').text(row.received_date))
+                        .append($('<td>').text(row.categoryId)) // Hidden column for category ID
                         .append($('<td>').html(`<button class="btn btn-success btn-circle btn-done" data-id="${row.id}" data-price="${row.price}" data-phone="${row.phone}">  <i class="fas fa-check"></i> </button>
-                                                  <button class="btn btn-secondary btn-circle btn-edit" data-id="${row.id}" data-phone="${row.phone}"> <i class="fas fa-edit"></i> </button>
-                                                  <button class="btn btn-danger btn-circle btn-delete" data-id="${row.id}" data-phone="${row.phone}"> <i class="fas fa-minus-circle"></i> </button>`));
+                                              <button class="btn btn-secondary btn-circle btn-edit" data-id="${row.id}" data-phone="${row.phone}"> <i class="fas fa-edit"></i> </button>
+                                              <button class="btn btn-danger btn-circle btn-delete" data-id="${row.id}" data-phone="${row.phone}"> <i class="fas fa-minus-circle"></i> </button>`));
+
+                    const category = categories.find(cat => cat.id === row.categoryId);
+                    const categoryColor = category ? category.color : ''; // Default color if category not found
+                    customer.css('background-color', categoryColor);
+
                     table.row.add(customer);
                 });
                 table.draw();
@@ -71,10 +79,58 @@ $(document).ready(() => {
             .catch(error => console.error(error));
     }
 
+    function fetchCategories() {
+        fetch('/getCategories')
+            .then(response => response.json())
+            .then(categoriesData => {
+                categories = categoriesData; // Assign categories globally
+                updateFilterBar(categories);
+                fetchLiveTickets(); // Fetch tickets after categories are loaded
+            })
+            .catch(error => console.error('Error fetching categories:', error));
+    }
 
-    // Initial fetch and update
-    fetchLiveTickets();
+    // Update the filter bar with category bubbles
+    function updateFilterBar(categories) {
+        const filterBar = $('#filterBar');
 
+        // Clear existing filter bar
+        filterBar.empty();
+
+        // Add "All" category bubble
+        const allCategoryBubble = $('<div class="category-bubble" data-category-id="A">All</div>');
+        allCategoryBubble.css('background-color', '#fff');
+        filterBar.append(allCategoryBubble);
+
+        // Add category bubbles
+        categories.forEach(category => {
+            const categoryBubble = $(`<div class="category-bubble" data-category-id="${category.id}">${category.name}</div>`);
+            categoryBubble.css('background-color', category.color);
+            filterBar.append(categoryBubble);
+        });
+
+        // Add click event to category bubbles
+        $('.category-bubble').on('click', function () {
+            const selectedCategoryId = $(this).data('category-id');
+            filterTableByCategory(selectedCategoryId);
+        });
+    }
+
+    function filterTableByCategory(selectedCategory) {
+        if (selectedCategory === "A") {
+            // Clear the category filter
+            table.column(8).search('').draw();
+        } else {
+            // Filter by the selected category
+            table.column(8).search(selectedCategory);
+            table.draw(); // Draw after setting the search term
+        }
+    }
+
+
+
+    // Fetch categories and live tickets on page load
+    fetchCategories();
     setInterval(fetchLiveTickets, 500000);
 
     $(document).on('click', 'button.btn-delete', function () {

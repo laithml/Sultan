@@ -148,6 +148,9 @@ exports.getLive = (req, res) => {
             if (!data.model) {
                 data.model = "Default Model"; // replace "Default Model" with whatever default value you want
             }
+            if (!data.categoryId) {
+                data.categoryId = "";
+            }
 
             liveTickets.push(data);
         });

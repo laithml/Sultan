@@ -2,6 +2,37 @@ let selectedBrand = null;
 let selectedModel = null;
 let selectedImg = null;
 
+
+$(document).ready(() => {
+    // Fetch categories from the server
+// Fetch categories from the server
+    $.ajax({
+        url: '/getCategories',
+        method: 'GET',
+        success: (categories) => {
+            const $categoryDropdown = $('#category');
+
+            // Populate the dropdown with received categories
+            categories.forEach(category => {
+                const $option = $('<option>', {
+                    value: category.name,
+                    text: category.name,
+                    css: { backgroundColor: category.color },
+                    data: { id: category.id }, // Add data-id attribute with the category ID
+                });
+
+                $categoryDropdown.append($option);
+            });
+        },
+        error: (err) => {
+            console.error('Error fetching categories:', err);
+        }
+    });
+
+
+});
+
+
 document.querySelectorAll('.brand-icon').forEach(icon => {
     let modelDropdown = document.getElementById('phoneModel');
 
@@ -210,6 +241,16 @@ $("#addBtn").click(function (event) {
     const today = new Date();
     const date = today.getFullYear() + '/' + (today.getMonth() + 1) + '/' + today.getDate();
     const time = today.getHours() + ":" + today.getMinutes();
+    const selectedCategory = $('#category').val();
+
+    // Check if the selected category is 'Select Category'
+    if (selectedCategory === '') {
+        // Prevent form submission and show an alert (you can customize this part)
+        alert('Please select a category before submitting the form.');
+        return;
+    }
+
+
     const Customer = {
         name: $("#name").val(),
         phone: $("#tel").val(),
@@ -219,10 +260,12 @@ $("#addBtn").click(function (event) {
         price: $("#price").val(),
         received_date: date + ' ' + time,
         done_date: "--",
-        brand:selectedBrand,
-        model:selectedModel,
-        img:selectedImg
-    }
+        brand: selectedBrand,
+        model: selectedModel,
+        img: selectedImg,
+        categoryId: $('#category').find(':selected').data('id') || null, // Use the data-id attribute to store the category ID
+    };
+
     //validate phone
     if (!validatePhone(Customer.phone)) {
         alert("Invalid phone number");
@@ -244,6 +287,7 @@ $("#addBtn").click(function (event) {
     formData.append('brand', Customer.brand);
     formData.append('model', Customer.model);
     formData.append('img', Customer.img);
+    formData.append('categoryId', Customer.categoryId);
 
     fetch('/add-customer', {
         method: 'POST',
