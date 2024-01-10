@@ -20,4 +20,7 @@ exports.notFound = (req,res) => {
 exports.customers = (req,res) => {
     res.render("customers");
 }
+exports.preOrder = (req,res) => {
+    res.render("pre-order");
+}
 

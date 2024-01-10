@@ -185,7 +185,7 @@
     <footer class="sticky-footer bg-white">
       <div class="container my-auto">
         <div class="copyright text-center my-auto">
-          <span>Copyright &copy; Your Website 2023</span>
+          <span>Copyright &copy; Laith Muhtaseb 2024</span>
         </div>
       </div>
     </footer>
@@ -273,6 +273,23 @@
           <label for="note">Note:</label>
           <input type="text" class="form-control" id="note" placeholder="Enter note" required autofocus>
         </div>
+        <fieldset class="form-group">
+            <legend class="col-form-label">Status:</legend>
+          <div>
+            <input type="radio" id="repaired" name="Status" value="repaired" checked />
+            <label for="repaired">تم التصليح بنجاح</label>
+          </div>
+
+          <div>
+            <input type="radio" id="unrepaired" name="Status" value="unrepaired" />
+            <label for="unrepaired">غير قابل لتصليح</label>
+          </div>
+
+          <div>
+            <input type="radio" id="refused" name="Status" value="refused" />
+            <label for="refused">الزبون رفض التصليح</label>
+          </div>
+        </fieldset>
         <div class="form-group">
           <label for="final_price">Price:</label>
           <input type="text" class="form-control" id="final_price" placeholder="Enter price" required >

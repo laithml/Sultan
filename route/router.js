@@ -23,6 +23,8 @@ router.get("/customers", requireAuth, HomeController.customers);
 
 router.get("/not-found", HomeController.notFound);
 
+router.get("/preOrder", requireAuth, HomeController.preOrder);
+
 //*****************************************************************************************//
 //************************************TICKETS ROUTES***************************************//
 //*****************************************************************************************//

@@ -2,7 +2,7 @@ import {sendSms} from "./script.js";
 //TODO: add a note when received a ticket, edit button,search by name also,timer to print waiting
 // Custom sorting extension for DataTables
 jQuery.extend(jQuery.fn.dataTableExt.oSort, {
-    "date-custom-pre": function(a) {
+    "date-custom-pre": function (a) {
         let dateTime = a.split(' ');
         let date = dateTime[0].split('/');
         let time = dateTime[1].split(':');
@@ -17,10 +17,10 @@ jQuery.extend(jQuery.fn.dataTableExt.oSort, {
 
         return year + month + day + hour + minute;
     },
-    "date-custom-asc": function(a, b) {
+    "date-custom-asc": function (a, b) {
         return a.localeCompare(b);
     },
-    "date-custom-desc": function(a, b) {
+    "date-custom-desc": function (a, b) {
         return b.localeCompare(a);
     }
 });
@@ -32,16 +32,16 @@ $(document).ready(() => {
         data: [],
         pageLength: 100,
         columns: [
-            { data: "img" },
-            { data: "model" },
-            { data: "name" },
-            { data: "phone" },
-            { data: "issue" },
-            { data: "passcode" },
-            { data: "price" },
-            { data: "received_date", type: "date-custom" },
-            { data: "category", visible: false }, // Hidden column for category ID
-            { data: "Done" }
+            {data: "img"},
+            {data: "model"},
+            {data: "name"},
+            {data: "phone"},
+            {data: "issue"},
+            {data: "passcode"},
+            {data: "price"},
+            {data: "received_date", type: "date-custom"},
+            {data: "category", visible: false}, // Hidden column for category ID
+            {data: "Done"}
         ],
         order: [[7, "desc"]]
     });
@@ -126,7 +126,6 @@ $(document).ready(() => {
             table.draw(); // Draw after setting the search term
         }
     }
-
 
 
     // Fetch categories and live tickets on page load
@@ -218,30 +217,51 @@ $(document).ready(() => {
             //get the radio option
             let note = $('#note').val();
             let price = $('#final_price').val();
-
-            if (price.trim() === '') {
-                alert('Please enter a price.');
-                return;
+            let status = $('input[name="Status"]:checked').val();
+            let msg;
+            // Check which radio button is selected and update the status and send the message
+            if (status === 'repaired') {
+                if (price === '') {
+                    alert('Please enter the price');
+                    return;
+                }
+                status = 'تم التصليح بنجاح';
+                msg="مرحبًا!\n" +
+                    "يسرنا إعلامكم بأن الجهاز الخاص بكم قد تم إصلاحه بنجاح.\n" +
+                    "يمكنكم المجيء لاستلامه.\n" +
+                    "السعر:"+price+" ₪\n" +
+                    "شكرًا لاختياركم لخدماتنا!\n" +
+                    "\n" +
+                    "سلطان للتكنولوجيا 025853259\n" +
+                    "ملاحظة: المحل غير مسؤول عن الجهاز بعد ٧ أيام من تاريخ هذه الرسالة."
+            } else if (status === 'unrepaired') {
+                status = 'غير قابل لتصليح';
+                msg="نأسف لإبلاغكم أن الجهاز الخاص بكم غير قابل للتصليح.\n" +
+                    "يرجى الاتصال بنا لمزيد من التفاصيل والخيارات المتاحة.\n" +
+                    "شكرًا لتفهمكم.\n" +
+                    "\n" +
+                    "سلطان للتكنولوجيا 025853259\n" +
+                    "ملاحظة: المحل غير مسؤول عن الجهاز بعد ٧ أيام من تاريخ هذه الرسالة."
+            } else if (status === 'refused') {
+                status = 'الزبون رفض التصليح';
+                msg="عذرًا، تم رفض طلب التصليح من قبل الزبون.\n" +
+                    "يرجى الاتصال بنا للمزيد من التفاصيل وترتيب استلام الجهاز.\n" +
+                    "شكرًا لتعاونكم.\n" +
+                    "\n" +
+                    "سلطان للتكنولوجيا 025853259\n" +
+                    "ملاحظة: المحل غير مسؤول عن الجهاز بعد ٧ أيام من تاريخ هذه الرسالة.";
             }
+
+
             formData.append('note', note);
             formData.append('price', price);
-            formData.append('status', "done");
+            formData.append('status', status);
 
 
             fetch('/done-ticket', {
                 method: 'POST', body: formData
             }).then(response => {
                 if (response.ok) {
-                    let msg = "Your phone is ready to pick up, please come to the store to pick it up\n" +
-                        "Thank you for choosing us\n" +
-                        "Total price: " +price + " ₪\n" +
-                        "Sultan Technology - 025853259\n"+
-                        "The store is not responsible for the phone after 7 days from receiving this message.";
-                    // let msg= "هاتفك جاهز للاستلام ، يرجى الحضور إلى المتجر لاستلامه\n"+
-                    //     "شكرا لك لاختيارنا\n"
-                    // +"السعر الإجمالي: "+ price+"\n"
-                    // +"سلطان للتكنولوجيا - 025853259\n"+
-                    //     "المتجر غير مسئول عن الهاتف بعد 7 أيام من استلام هذه الرسالة.\n" ;
                     sendSms(phoneNumber, msg);
                     window.location.href = "tickets";
                 } else {
