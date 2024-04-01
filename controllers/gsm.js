@@ -28,15 +28,27 @@ const Xbox = [
 // Function to fetch and cache data for a specific brand
 const fetchDataForBrand = async (brand) => {
     try {
-        const devices = await gsmarena.catalog.getBrand(brand);
-        if (brand==="samsung-phones-9"){
-            //save only Devices start with Galaxy
-            const galaxyDevices = devices.filter(device => device.name.startsWith("Galaxy"));
-            //remove Galaxy from the name
+        let allDevices = [];
+        let page = 1;
+        let hasNextPage = true;
+
+        while (hasNextPage) {
+            const devices = await gsmarena.catalog.getBrand(`${brand}-p${page}`);
+            if (devices.length === 0 || page>5) {
+                hasNextPage = false;
+            } else {
+                allDevices = allDevices.concat(devices);
+                page++;
+            }
+        }
+
+        if (brand === "samsung-phones-9") {
+            const galaxyDevices = allDevices.filter(device => device.name.startsWith("Galaxy"));
             galaxyDevices.forEach(device => device.name = device.name.replace("Galaxy", ""));
             cachedData[brand] = galaxyDevices;
-        }else
-        cachedData[brand] = devices;
+        } else {
+            cachedData[brand] = allDevices;
+        }
     } catch (error) {
         console.error(`Error fetching data for brand ${brand}: ${error.message}`);
     }
@@ -44,7 +56,7 @@ const fetchDataForBrand = async (brand) => {
 
 // Fetch data for Apple, Samsung, and Xiaomi when the server starts
 const initializeData = async () => {
-    const brandsToInitialize = ["apple-phones-48", "samsung-phones-9", "xiaomi-phones-80","vivo-phones-98"];
+    const brandsToInitialize = ["apple-phones-f-48-0", "samsung-phones-f-9-0", "xiaomi-phones-f-80-0","vivo-phones-f-98-0"];
 
     for (const brand of brandsToInitialize) {
         await fetchDataForBrand(brand);

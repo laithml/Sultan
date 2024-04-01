@@ -139,7 +139,7 @@ export function sendSms(to, body) {
 }
 
 
-function generateBarcode(phone,name,passcode) {
+function generateBarcode(phone,name,passcode,issue) {
     $("#barcode").JsBarcode(phone,{
         width:8,
         height:90,
@@ -151,7 +151,7 @@ function generateBarcode(phone,name,passcode) {
     windowContent += '<head><title>Print canvas</title></head>';
     windowContent += '<body>';
     windowContent += '<img src="' + dataUrl + '" style="max-width: 40mm; max-height: 100mm;">';
-    windowContent += '<p style="align-content: center; font-size: 14px;">' + name +" , "+phone + ", "+ passcode + '</p>';
+    windowContent += '<p style="align-content: center; font-size: 14px;">' + name +" , "+phone + ", "+ passcode +", "+issue+ '</p>';
     windowContent += '</body>';
     windowContent += '</html>';
 
@@ -296,7 +296,7 @@ $("#addBtn").click(function (event) {
     })
         .then(response => {
             if (response.ok) {
-                generateBarcode(Customer.phone,Customer.name,Customer.passcode);
+                generateBarcode(Customer.phone,Customer.name,Customer.passcode,Customer.issue);
                 const overlay = $('<div>').css({
                     'position': 'fixed',
                     'top': '0',
