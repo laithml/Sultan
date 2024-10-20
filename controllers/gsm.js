@@ -22,7 +22,24 @@ const Xbox = [
         img: "https://www.nicepng.com/png/detail/506-5062685_microsoft-xbox-one-s-headphones.png"
     },
     {name: 'Xbox Series X', img: "https://pngimg.com/uploads/xbox/xbox_PNG101377.png"},
+    {name: 'Xbox Series S', img: "https://m.media-amazon.com/images/I/61QKAlzPSfL._AC_UF894,1000_QL80_.jpg"},
+
     {name: "Controller", img: "https://freepngimg.com/save/27382-xbox-controller-image/1800x1368"}
+]
+
+const Nintendo =[
+    {
+        name: 'Switch Lite',
+        img: "https://i.namu.wiki/i/1sNJUaxPlTtfHrgPQ71lqxM-9_xxqwKEAFOmReRrNtzdCa1a-tgbjWLyr63CfpI9l_OGg2sfYyF_WJ8yvp3MVw.webp"
+    },
+    {
+        name: 'Switch ',
+        img: "https://e7.pngegg.com/pngimages/469/643/png-clipart-nintendo-switch-pokemon-red-and-blue-super-mario-odyssey-video-game-consoles-nintendo-blue-electronics.png"
+    },
+    {
+        name: 'Switch Oled ',
+        img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRMeqUOyZVixCDmbcbcWhkkLZFRxQeB-tW-Gg&s"
+    },
 ]
 
 // Function to fetch and cache data for a specific brand
@@ -80,6 +97,10 @@ exports.getDevices = async (req, res) => {
     // Handle your existing cases for "Sony", "Xbox", and "Other" here...
     if (brand === "Sony") {
         res.send(Sony);
+        return;
+    }
+    if (brand === "Nintendo") {
+        res.send(Nintendo);
         return;
     }
     if (brand === "Xbox") {

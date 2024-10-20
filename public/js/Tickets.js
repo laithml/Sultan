@@ -46,6 +46,21 @@ $(document).ready(() => {
         order: [[7, "desc"]]
     });
 
+
+
+    let formData;
+    
+    function resetFormData() {
+        formData = new FormData();
+    }
+
+    resetFormData();
+
+    $('#editModal, #noteModal').on('hidden.bs.modal', function () {
+        resetFormData(); // Reset formData when modal is dismissed
+        $(this).find('form').trigger('reset'); // Reset form fields
+    });
+
     // Fetch data from backend server
     function fetchLiveTickets() {
         fetch('/get-live')
@@ -148,7 +163,7 @@ $(document).ready(() => {
     $(document).on('click', 'button.btn-edit', function () {
         const id = $(this).data('id');
         const phone = $(this).data('phone');
-        const formData = new FormData();
+        resetFormData();
         formData.append('id', id);
         formData.append('phone', phone);
         console.log(id, phone);
@@ -206,7 +221,7 @@ $(document).ready(() => {
         let price = $(this).data('price');
         console.log(phone, id, price);
         let phoneNumber = '+972' + $(this).data('phone');
-        const formData = new FormData();
+        resetFormData();
         formData.append('id', id);
         formData.append('phone', phone);
         $('#final_price').val(price);
@@ -251,7 +266,6 @@ $(document).ready(() => {
                     "سلطان للتكنولوجيا 025853259\n" +
                     "ملاحظة: المحل غير مسؤول عن الجهاز بعد ٧ أيام من تاريخ هذه الرسالة.";
             }
-
 
             formData.append('note', note);
             formData.append('price', price);

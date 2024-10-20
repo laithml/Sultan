@@ -249,6 +249,13 @@ $("#addBtn").click(function (event) {
         alert('Please select a category before submitting the form.');
         return;
     }
+    if(selectedModel == null){
+        if(selectedBrand != null)
+            selectedModel=selectedBrand
+        else{
+            selectedModel=selectedCategory
+        }
+    }
 
 
     const Customer = {
