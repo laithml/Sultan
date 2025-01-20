@@ -6,6 +6,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+<script>
+    $(document).ready(() => {
+        // Initialize Select2 on #phoneModel
+        $('#phoneModel').select2({
+            placeholder: 'Search and select a model',
+            allowClear: true,
+            width: 'resolve'
+        });
+
+        // Example: Add options dynamically (you can replace this with your fetch logic)
+        const exampleModels = [
+            { id: 'model1', text: 'iPhone 13' },
+            { id: 'model2', text: 'Samsung Galaxy S21' },
+            { id: 'model3', text: 'Xiaomi Mi 11' }
+        ];
+
+        exampleModels.forEach(model => {
+            const option = new Option(model.text, model.id, false, false);
+            $('#phoneModel').append(option);
+        });
+
+        $('#phoneModel').trigger('change'); // Refresh Select2 with new options
+    });
+</script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
     <title>SULTAN CRM</title>
     <link href="../public/fonts/fontawesome-free/css/all.css" rel="stylesheet" type="text/css">
     <link
