@@ -22,23 +22,52 @@ const authToken = process.env.TWILIO_AUTH_TOKEN;
 const client = twilio(accountSid, authToken);
 
 
-// Send SMS route
-app.post('/send-sms', upload.none(), (req, res) => {
-    let {to, body} = req.body;
-    to="whatsapp:"+to;
-    console.log(to);
-    console.log(body);
-    client.messages.create({
-        from: 'whatsapp:+97225853259',
-        body: body,
-        to: to
-    }).then(() => {
-        res.send('Message sent!');
-    }).catch((error) => {
-        console.error(error);
-        res.status(500).send('Error sending message');
-    });
+app.post('/send-sms', upload.none(), async (req, res) => {
+    try {
+        const { to, template, params } = req.body;
+        const parsedParams = JSON.parse(params || '[]');
+
+        let contentSid = '';
+
+        // Match the template name to the correct Content SID
+        if (template === 'repaired_msg_1') {
+            contentSid = 'HXfdcbb76d6237a906f72e1760c6ba1923';
+        } else if (template === 'refused') {
+            contentSid = 'HX113d15529b23c0ab561d6a2a721ad174';
+        } else if (template === 'unrepaired_msg') {
+            contentSid = 'HX1f0e3e10171b949b49bf9e8bf2e32bf9';
+        } else {
+            return res.status(400).send('Invalid template name');
+        }
+
+        const messageData = {
+            from: 'whatsapp:+97225853259', // Your Twilio WhatsApp sender
+            to: `whatsapp:${to}`,
+            contentSid: contentSid,
+        };
+
+        if (parsedParams.length > 0) {
+            // If there are variables like {{1}}
+            const contentVariables = {};
+
+            // Twilio expects variables as { "1": "value1", "2": "value2", ... }
+            parsedParams.forEach((param, index) => {
+                contentVariables[(index + 1).toString()] = param;
+            });
+
+            messageData.contentVariables = JSON.stringify(contentVariables);
+        }
+
+        await client.messages.create(messageData);
+
+        res.send('✅ Template message sent successfully!');
+    } catch (error) {
+        console.error('❌ Error sending template message:', error.message);
+        res.status(500).send('Error sending template message');
+    }
 });
+
+
 
 
 //register auth

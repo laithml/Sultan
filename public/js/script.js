@@ -120,24 +120,23 @@ function validateForm(email, password, passwordRepeat) {
     return errors;
 }
 
-export function sendSms(to, body) {
+export function sendTemplateMessage(to, templateName, params = []) {
     const formData = new FormData();
     formData.append('to', to);
-    formData.append('body', body);
+    formData.append('template', templateName);
+    formData.append('params', JSON.stringify(params));
+
     fetch('/send-sms', {
         method: 'POST',
         body: formData
-    })
-        .then(response => {
-            if (!response.ok) {
-                alert('Failed to send SMS.');
-            }
-        })
-        .catch(error => {
-            console.error(error);
-        });
+    }).then(response => {
+        if (!response.ok) {
+            alert('Failed to send WhatsApp template message.');
+        }
+    }).catch(error => {
+        console.error(error);
+    });
 }
-
 
 function generateBarcode(phone,name,passcode,issue) {
     $("#barcode").JsBarcode(phone,{

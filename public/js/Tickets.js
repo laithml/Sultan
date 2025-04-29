@@ -1,4 +1,4 @@
-import {sendSms} from "./script.js";
+import {sendTemplateMessage} from "./script.js";
 //TODO: add a note when received a ticket, edit button,search by name also,timer to print waiting
 // Custom sorting extension for DataTables
 jQuery.extend(jQuery.fn.dataTableExt.oSort, {
@@ -220,69 +220,52 @@ $(document).ready(() => {
         let id = $(this).data('id');
         let price = $(this).data('price');
         console.log(phone, id, price);
-        let phoneNumber = '+972' + $(this).data('phone');
+        let phoneNumber = '+972' + phone;
         resetFormData();
         formData.append('id', id);
         formData.append('phone', phone);
         $('#final_price').val(price);
         $('#noteModal').modal('show');
-
-        //get data from noteModal
-        $('#addNote').click(function () {
-            //get the radio option
+    
+        $('#addNote').off('click').on('click', function () {
             let note = $('#note').val();
-            let price = $('#final_price').val();
+            let finalPrice = $('#final_price').val();
             let status = $('input[name="Status"]:checked').val();
-            let msg;
-            // Check which radio button is selected and update the status and send the message
+            let templateName = '';
+            let params = [];
+    
             if (status === 'repaired') {
-                if (price === '') {
+                if (finalPrice === '') {
                     alert('Please enter the price');
                     return;
                 }
                 status = 'تم التصليح بنجاح';
-                msg="مرحبًا!\n" +
-                    "يسرنا إعلامكم بأن الجهاز الخاص بكم قد تم إصلاحه بنجاح.\n" +
-                    "يمكنكم المجيء لاستلامه.\n" +
-                    "السعر:"+price+" ₪\n" +
-                    "شكرًا لاختياركم لخدماتنا!\n" +
-                    "\n" +
-                    "سلطان للتكنولوجيا 025853259\n" +
-                    "ملاحظة: المحل غير مسؤول عن الجهاز بعد ٧ أيام من تاريخ هذه الرسالة."
+                templateName = 'repaired_msg_1';
+                params = [finalPrice];
             } else if (status === 'unrepaired') {
                 status = 'غير قابل لتصليح';
-                msg="نأسف لإبلاغكم أن الجهاز الخاص بكم غير قابل للتصليح.\n" +
-                    "يرجى الاتصال بنا لمزيد من التفاصيل والخيارات المتاحة.\n" +
-                    "شكرًا لتفهمكم.\n" +
-                    "\n" +
-                    "سلطان للتكنولوجيا 025853259\n" +
-                    "ملاحظة: المحل غير مسؤول عن الجهاز بعد ٧ أيام من تاريخ هذه الرسالة."
+                templateName = 'unrepaired_msg';
             } else if (status === 'refused') {
                 status = 'الزبون رفض التصليح';
-                msg="عذرًا، تم رفض طلب التصليح من قبل الزبون.\n" +
-                    "يرجى الاتصال بنا للمزيد من التفاصيل وترتيب استلام الجهاز.\n" +
-                    "شكرًا لتعاونكم.\n" +
-                    "\n" +
-                    "سلطان للتكنولوجيا 025853259\n" +
-                    "ملاحظة: المحل غير مسؤول عن الجهاز بعد ٧ أيام من تاريخ هذه الرسالة.";
+                templateName = 'refused';
             }
-
+    
             formData.append('note', note);
-            formData.append('price', price);
+            formData.append('price', finalPrice);
             formData.append('status', status);
-
-
+    
             fetch('/done-ticket', {
-                method: 'POST', body: formData
+                method: 'POST',
+                body: formData
             }).then(response => {
                 if (response.ok) {
-                    sendSms(phoneNumber, msg);
+                    sendTemplateMessage(phoneNumber, templateName, params);
                     window.location.href = "tickets";
                 } else {
                     throw new Error('Network response was not ok');
                 }
-            })
-                .catch(error => console.log(error));
+            }).catch(error => console.log(error));
         });
     });
+    
 });
